@@ -10,7 +10,7 @@ const subscriptionSchema = new mongoose.Schema(
       maxLength: 100,
     },
     price: {
-      type: String,
+      type: Number,
       required: [true, "Subscription price is required"],
       min: [, "Price must be greater than zero"],
     },
@@ -77,22 +77,21 @@ const subscriptionSchema = new mongoose.Schema(
 
 //Auto compute renewal date
 subscriptionSchema.pre("save", function (next) {
-  if (!this.renewalDate) {
-    const renewalPeriods = {
-      daily: 1,
-      weekly: 7,
-      monthly: 30,
-      yearly: 365,
-    };
+  const renewalPeriods = {
+    daily: 1,
+    weekly: 7,
+    monthly: 30,
+    yearly: 365,
+  };
 
-    this.renewalDate = new Date(this.startDate);
-    this.renewalDate.setDate(
-      this.renewalDate().getDate() + renewalPeriods[this.frequency]
-    );
+  if (!this.renewalDate) {
+    const renewalDate = new Date(this.startDate);
+    renewalDate.setDate(renewalDate.getDate() + renewalPeriods[this.frequency]);
+    this.renewalDate = renewalDate;
   }
   //Auto update status if renewal date has expired
   if (this.renewalDate < new Date()) {
-    this.status = expired;
+    this.status = "expired";
   }
 
   next();

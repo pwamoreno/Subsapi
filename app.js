@@ -8,12 +8,14 @@ import subscriptionRouter from "./routes/subscription.routes.js";
 import connectToDB from "./database/mongodb.js";
 import errorMiddleware from "./middleware/error.middleware.js";
 import cookieParser from "cookie-parser";
+import arcjectMiddleware from "./middleware/arcjet.middleware.js";
 
 const app = express();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
+app.use(arcjectMiddleware);
 
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/users", userRouter);
@@ -28,7 +30,7 @@ app.get("/", (req, res) => {
 app.listen(PORT, async () => {
   console.log(`Server is running on port ${PORT} at http://localhost:${PORT}`);
 
-  await connectToDB()
+  await connectToDB();
 });
 
 export default app;
